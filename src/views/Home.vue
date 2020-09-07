@@ -1,18 +1,43 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div
+      v-for="character in characters"
+      :key="character.id"
+    >
+      <img :src="character.image" />
+      {{ character.name }}
+      <router-link :to="`/character/${character.id}`">
+        Read more
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { defineComponent, onMounted } from 'vue'
+import CharacterService from '../service/CharacterService'
 
-export default {
+export default defineComponent({
   name: 'Home',
-  components: {
-    HelloWorld
+  setup () {
+    const service = new CharacterService()
+    const characters = service.getCharacters()
+
+    onMounted(async () => {
+      await service.fetchAll()
+    })
+
+    return {
+      characters
+    }
   }
-}
+})
 </script>
+
+<style scoped>
+.home {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+</style>
